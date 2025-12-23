@@ -1,0 +1,8 @@
+kind: UDSBundle
+metadata:
+  name: core-monitoring
+  version: 0.56.0
+packages:
+  - name: "monitoring"
+    repository: ghcr.io/defenseunicorns/packages/private/uds/core-monitoring
+    ref: 0.56.0-unicorn

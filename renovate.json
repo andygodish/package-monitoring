@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "recreateClosed": true,
+
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/\\.ya?ml$/"],
+      "matchStrings": [
+        "- name: PACKAGE_VERSION\\s*\\n\\s*description: \"Version of the Core package\"\\s*\\n\\s*default: \"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "defenseunicorns/uds-core",
+      "versioningTemplate": "semver"
+    }
+  ],  
+
+  "packageRules": [
+    {
+      "matchManagers": ["custom.regex"],
+      "matchPackageNames": ["defenseunicorns/uds-core"],
+      "groupName": "Core Monitoring Package",
+      "semanticCommitType": "deps",
+      "semanticCommitScope": "core",
+      "commitMessageTopic": "Core Monitoring package",
+      "prTitle": "deps(core): update core monitoring package to {{newVersion}}"
+    }
+  ]
+}
