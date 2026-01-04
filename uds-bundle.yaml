@@ -1,8 +1,16 @@
 kind: UDSBundle
 metadata:
   name: core-monitoring
-  version: 0.56.0
+  version: 0.58.1
 packages:
   - name: "monitoring"
     repository: ghcr.io/defenseunicorns/packages/private/uds/core-monitoring
-    ref: 0.56.0-unicorn
+    ref: 0.58.1-unicorn
+    overrides:
+      grafana:
+        grafana:
+          variables:
+            - name: EXTRA_SECRET_MOUNTS
+              path: extraSecretMounts
+            - name: ENV_GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA
+              path: env.GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA

@@ -12,3 +12,32 @@ kubectl -n grafana set env deploy/grafana \
 kubectl -n grafana rollout restart deploy/grafana
 ```
 
+## Grafana Helm Chart Overrides
+
+Two overrides are needed when using the upstream UDS Core monitoring package. First create a secret containing your CA cert:
+
+```bash
+kubectl -n grafana create secret generic uds-local-ca \
+  --from-file=ca.crt=./certs/uds.local/uds.local-ca.crt
+```
+
+Utilize UDS variable overrides in a uds-config.yaml file as follows:
+
+```yaml
+EXTRA_SECRET_MOUNTS:
+    # 
+    - name: auth-generic-oauth-secret-mount
+    secretName: sso-client-uds-core-admin-grafana
+    defaultMode: 0440
+    mountPath: /etc/secrets/auth_generic_oauth
+    readOnly: true
+    - name: uds-local-ca
+    secretName: uds-local-ca
+    defaultMode: 0444
+    readOnly: true
+    mountPath: /etc/grafana/certs
+    items:
+        - key: ca.crt
+        path: ca.crt
+ENV_GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA: /etc/grafana/certs/ca.crt
+```
