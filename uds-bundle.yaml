@@ -1,11 +1,11 @@
 kind: UDSBundle
 metadata:
   name: core-monitoring
-  version: 0.58.1
+  version: 0.59.1
 packages:
   - name: "monitoring"
     repository: ghcr.io/defenseunicorns/packages/private/uds/core-monitoring
-    ref: 0.58.1-unicorn
+    ref: 0.59.1-unicorn
     overrides:
       grafana:
         grafana:

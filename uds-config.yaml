@@ -1,0 +1,23 @@
+options:
+  tmp_dir: "/var/tmp"
+shared:
+  domain: "uds.local"
+variables:
+  monitoring: 
+    EXTRA_SECRET_MOUNTS:
+      - name: auth-generic-oauth-secret-mount
+        secretName: sso-client-uds-core-admin-grafana
+        defaultMode: 0440
+        mountPath: /etc/secrets/auth_generic_oauth
+        readOnly: true
+      - name: uds-local-ca
+        secretName: uds-local-ca
+        defaultMode: 0444
+        readOnly: true
+        mountPath: /etc/grafana/certs
+        items:
+          - key: ca.crt
+            path: ca.crt
+    ENV_GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA: /etc/grafana/certs/ca.crt
+
+    
