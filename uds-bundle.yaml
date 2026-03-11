@@ -14,3 +14,20 @@ packages:
               path: extraSecretMounts
             - name: ENV_GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA
               path: env.GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA
+
+      # Ensure kube-prometheus-stack discovers PodMonitors/PrometheusRules/AlertmanagerConfigs
+      # created outside the monitoring namespace (e.g., istio gateways).
+      kube-prometheus-stack:
+        kube-prometheus-stack:
+          values:
+            prometheus:
+              prometheusSpec:
+                podMonitorNamespaceSelector: {}
+                ruleNamespaceSelector: {}
+            alertmanager:
+              alertmanagerSpec:
+                alertmanagerConfigNamespaceSelector: {}
+
+  # Local package to persist the dev-cluster one-off fixes (421 rule + MM routing + NetPol + gateway PodMonitors)
+  - name: monitoring-extras
+    path: ./monitoring-extras

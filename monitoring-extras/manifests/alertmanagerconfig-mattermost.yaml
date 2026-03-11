@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: mattermost
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  route:
+    receiver: mattermost
+    matchers:
+      - name: alertname
+        value: TenantGatewayMisdirectedRequest421
+        matchType: "="
+  receivers:
+    - name: mattermost
+      slackConfigs:
+        - apiURL:
+            name: mattermost-webhook
+            key: url
+          sendResolved: true
+          username: alertmanager
+          title: "[{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}"
+          text: |
+            *Severity:* {{ .CommonLabels.severity }}
+            *Namespace:* {{ .CommonLabels.namespace }}
+            {{ range .Alerts -}}
+            - {{ .Annotations.summary }}
+              {{ .Annotations.description }}
+            {{ end }}

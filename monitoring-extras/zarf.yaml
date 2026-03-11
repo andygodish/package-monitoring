@@ -1,0 +1,27 @@
+kind: ZarfPackageConfig
+metadata:
+  name: monitoring-extras
+  description: "Durable monitoring extras: 421 alert + Mattermost routing + NetPol + gateway PodMonitors"
+  version: 0.1.0
+
+variables:
+  - name: MATTERMOST_WEBHOOK_URL
+    description: Mattermost incoming webhook URL (Mattermost accepts Slack-compatible webhooks)
+    default: ""
+
+components:
+  - name: monitoring-extras
+    required: true
+    manifests:
+      - name: monitoring-extras
+        namespace: monitoring
+        files:
+          - manifests/secret-mattermost-webhook.yaml
+          - manifests/alertmanagerconfig-mattermost.yaml
+          - manifests/prometheusrule-tenant-gateway-421.yaml
+          - manifests/networkpolicy-alertmanager-egress-chat-via-tenant-gateway.yaml
+
+      - name: gateway-scrape
+        files:
+          - manifests/podmonitor-tenant-gateway-envoy-stats.yaml
+          - manifests/podmonitor-admin-gateway-envoy-stats.yaml
