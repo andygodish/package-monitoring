@@ -1,23 +1,40 @@
 options:
   tmp_dir: "/var/tmp"
-shared:
-  domain: "uds.local"
 variables:
-  monitoring: 
-    EXTRA_SECRET_MOUNTS:
-      - name: auth-generic-oauth-secret-mount
-        secretName: sso-client-uds-core-admin-grafana
-        defaultMode: 0440
-        mountPath: /etc/secrets/auth_generic_oauth
-        readOnly: true
-      - name: uds-local-ca
-        secretName: uds-local-ca
-        defaultMode: 0444
-        readOnly: true
-        mountPath: /etc/grafana/certs
-        items:
-          - key: ca.crt
-            path: ca.crt
-    ENV_GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA: /etc/grafana/certs/ca.crt
+  monitoring:
+    # Bundle variables (see uds-bundle.yaml overrides)
+    GRAFANA_HA: true
 
-    
+    # Point Grafana at the Postgres DB created by package-postgres-operator (Zalando operator)
+    # Service: postgres/pg-cluster
+    GRAFANA_PG_HOST: pg-cluster.postgres.svc.cluster.local
+    GRAFANA_PG_PORT: 5432
+
+    # DB created by package-postgres-operator uds-config.yaml: grafanadb
+    GRAFANA_PG_DATABASE: grafanadb
+
+    # For now use the operator-created superuser creds from secret:
+    #   postgres/postgres.pg-cluster.credentials.postgresql.acid.zalan.do
+    GRAFANA_PG_USER: postgres
+    # NOTE: do not commit real passwords. Provide via environment/secret management when deploying.
+    GRAFANA_PG_PASSWORD: "CHANGEME"
+
+    # In-cluster connection; no TLS by default
+    GRAFANA_PG_SSL_MODE: disable
+
+    ### These are required when you need to pass in a cert other than uds.dev
+    # EXTRA_SECRET_MOUNTS:
+    #   - name: auth-generic-oauth-secret-mount
+    #     secretName: sso-client-uds-core-admin-grafana
+    #     defaultMode: 0440
+    #     mountPath: /etc/secrets/auth_generic_oauth
+    #     readOnly: true
+    #   - name: uds-local-ca
+    #     secretName: uds-local-ca
+    #     defaultMode: 0444
+    #     readOnly: true
+    #     mountPath: /etc/grafana/certs
+    #     items:
+    #       - key: ca.crt
+    #         path: ca.crt
+    # ENV_GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA: /etc/grafana/certs/ca.crt
