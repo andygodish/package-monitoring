@@ -1,0 +1,31 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: mattermost
+  namespace: monitoring
+spec:
+  route:
+    receiver: "null"
+    routes:
+      - matchers:
+          - name: alertname
+            value: TenantGatewayMisdirectedRequest421
+            matchType: "="
+        receiver: mattermost
+  receivers:
+    - name: "null"
+    - name: mattermost
+      slackConfigs:
+        - apiURL:
+            name: mattermost-webhook
+            key: url
+          username: alertmanager
+          sendResolved: true
+          title: "[{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}"
+          text: |-
+            *Severity:* {{ .CommonLabels.severity }}
+            *Namespace:* {{ .CommonLabels.namespace }}
+            {{ range .Alerts -}}
+            - {{ .Annotations.summary }}
+              {{ .Annotations.description }}
+            {{ end }}

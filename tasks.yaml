@@ -47,6 +47,21 @@ tasks:
           ZARF_CONFIG="$CONFIG_FILE" uds zarf package deploy zarf-package-*-${PACKAGE_VERSION}-${PACKAGE_FLAVOR}.tar.zst \
             --confirm
 
+      - description: "Apply durable monitoring alerting + Mattermost notification resources"
+        cmd: |
+          set -euo pipefail
+
+          # Prometheus alert rule + NetworkPolicy are static.
+          kubectl apply -f manifests/prometheusrule-tenant-gateway-421.yaml
+          kubectl apply -f manifests/networkpolicy-allow-alertmanager-egress-chat-via-tenant-gateway.yaml
+          kubectl apply -f manifests/alertmanagerconfig-mattermost.yaml
+
+          # Webhook secret is environment-specific; do not commit real URLs.
+          : "${MATTERMOST_WEBHOOK_URL:?Set MATTERMOST_WEBHOOK_URL to the Mattermost incoming webhook URL}"
+          kubectl -n monitoring create secret generic mattermost-webhook \
+            --from-literal=url="${MATTERMOST_WEBHOOK_URL}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
   - name: clean
     description: "Remove local Zarf package files"
     actions:
