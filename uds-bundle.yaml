@@ -33,6 +33,7 @@ packages:
                   matchLabels:
                     release: kube-prometheus-stack
 
-  # Local package to persist the dev-cluster one-off fixes (421 rule + MM routing + NetPol + gateway PodMonitors)
+  # Local Zarf package included in this bundle to make dev alerting durable across redeploys.
   - name: monitoring-extras
-    path: ./monitoring-extras
+    path: ./packages/monitoring-extras
+    ref: 0.1.0

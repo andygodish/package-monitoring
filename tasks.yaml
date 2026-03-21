@@ -49,11 +49,17 @@ tasks:
             --confirm
 
   - name: deploy-bundle
-    description: "Deploy UDS bundle (includes monitoring-extras so fixes persist across redeploys)"
+    description: "Create+deploy the UDS bundle (includes monitoring-extras so fixes persist across redeploys)"
     actions:
-      - description: "Deploy the most recent local bundle tarball"
+      - description: "Deploy local bundle in dev mode"
         cmd: |
-          uds deploy uds-bundle-*.tar.zst --confirm
+          set -euo pipefail
+          : "${MATTERMOST_WEBHOOK_URL:?Set MATTERMOST_WEBHOOK_URL to the Mattermost incoming webhook URL}"
+
+          # This will create the bundle from the local directory and deploy it.
+          uds dev deploy . \
+            --confirm \
+            --set monitoring-extras.MATTERMOST_WEBHOOK_URL="${MATTERMOST_WEBHOOK_URL}"
 
   - name: clean
     description: "Remove local Zarf package files"
