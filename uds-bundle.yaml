@@ -14,3 +14,8 @@ packages:
               path: extraSecretMounts
             - name: ENV_GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA
               path: env.GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA
+
+  # Local Zarf package included in this bundle to make dev alerting durable across redeploys.
+  - name: monitoring-extras
+    path: ./packages/monitoring-extras
+    ref: 0.1.0

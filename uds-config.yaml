@@ -38,3 +38,7 @@ variables:
     #       - key: ca.crt
     #         path: ca.crt
     # ENV_GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA: /etc/grafana/certs/ca.crt
+
+  monitoring-extras:
+    # Mattermost incoming webhook URL; provide via --set or environment-specific config.
+    MATTERMOST_WEBHOOK_URL: "CHANGEME"
