@@ -18,6 +18,8 @@ components:
       - name: monitoring-alerting
         namespace: monitoring
         files:
+          - manifests/podmonitor-admin-gateway-envoy-prom.yaml
+          - manifests/podmonitor-tenant-gateway-envoy-prom.yaml
           - manifests/prometheusrule-tenant-gateway-421.yaml
           - manifests/alertmanagerconfig-mattermost.yaml
           - manifests/networkpolicy-allow-alertmanager-egress-chat-via-tenant-gateway.yaml
