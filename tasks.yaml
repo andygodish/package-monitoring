@@ -41,17 +41,9 @@ tasks:
           - ZARF_LOG_LEVEL=info
 
   - name: deploy
-    description: "Deploy Core monitoring Zarf package (no local extras)"
+    description: "Deploy the UDS bundle (Core Monitoring + durable dev alerting resources)"
     actions:
-      - description: "Deploy Core package with defined zarf-config.toml"
-        cmd: |
-          ZARF_CONFIG="$CONFIG_FILE" uds zarf package deploy zarf-package-*-${PACKAGE_VERSION}-${PACKAGE_FLAVOR}.tar.zst \
-            --confirm
-
-  - name: deploy-bundle
-    description: "Create+deploy the UDS bundle (includes monitoring-extras so fixes persist across redeploys)"
-    actions:
-      - description: "Deploy local bundle in dev mode"
+      - description: "Deploy local bundle in dev mode (preferred)"
         cmd: |
           set -euo pipefail
           : "${MATTERMOST_WEBHOOK_URL:?Set MATTERMOST_WEBHOOK_URL to the Mattermost incoming webhook URL}"
@@ -60,6 +52,14 @@ tasks:
           uds dev deploy . \
             --confirm \
             --set monitoring-extras.MATTERMOST_WEBHOOK_URL="${MATTERMOST_WEBHOOK_URL}"
+
+  - name: deploy-core-only
+    description: "Deploy Core Monitoring package only (no extras)"
+    actions:
+      - description: "Deploy Core package with defined zarf-config.toml"
+        cmd: |
+          ZARF_CONFIG="$CONFIG_FILE" uds zarf package deploy zarf-package-*-${PACKAGE_VERSION}-${PACKAGE_FLAVOR}.tar.zst \
+            --confirm
 
   - name: clean
     description: "Remove local Zarf package files"
