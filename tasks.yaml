@@ -40,19 +40,32 @@ tasks:
           - ZARF_LOG_LEVEL=info
 
   - name: deploy
-    description: "Deploy Core package"
+    description: "Deploy the UDS bundle (Core Monitoring + durable dev alerting resources)"
+    actions:
+      - description: "Deploy local bundle in dev mode (preferred)"
+        cmd: |
+          set -euo pipefail
+          : "${MATTERMOST_WEBHOOK_URL:?Set MATTERMOST_WEBHOOK_URL to the Mattermost incoming webhook URL}"
+
+          # This will create the bundle from the local directory and deploy it.
+          uds dev deploy . \
+            --confirm \
+            --set monitoring-extras.MATTERMOST_WEBHOOK_URL="${MATTERMOST_WEBHOOK_URL}"
+
+  - name: deploy-core-only
+    description: "Deploy Core Monitoring package only (no extras)"
     actions:
       - description: "Deploy Core package with defined zarf-config.toml"
         cmd: |
           ZARF_CONFIG="$CONFIG_FILE" uds zarf package deploy zarf-package-*-${PACKAGE_VERSION}-${PACKAGE_FLAVOR}.tar.zst \
             --confirm
 
-      - description: "Apply durable monitoring alerting + Mattermost notification resources (legacy)"
+  - name: deploy-legacy-extras
+    description: "(Legacy) kubectl apply the alerting/Mattermost extras after deploying Core"
+    actions:
+      - description: "Apply durable monitoring alerting + Mattermost notification resources via kubectl"
         cmd: |
           set -euo pipefail
-
-          # NOTE: Prefer `uds run deploy-bundle` instead, which bakes these resources into the UDSBundle
-          # via the local `monitoring-extras` package so they persist across redeploys without kubectl apply.
 
           kubectl apply -f manifests/prometheusrule-tenant-gateway-421.yaml
           kubectl apply -f manifests/networkpolicy-allow-alertmanager-egress-chat-via-tenant-gateway.yaml
@@ -63,18 +76,7 @@ tasks:
             --from-literal=url="${MATTERMOST_WEBHOOK_URL}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-  - name: deploy-bundle
-    description: "Create+deploy the UDS bundle (includes durable alerting resources)"
-    actions:
-      - description: "Deploy local bundle in dev mode"
-        cmd: |
-          set -euo pipefail
-          : "${MATTERMOST_WEBHOOK_URL:?Set MATTERMOST_WEBHOOK_URL to the Mattermost incoming webhook URL}"
-
-          # This will create the bundle from the local directory and deploy it.
-          uds dev deploy . \
-            --confirm \
-            --set monitoring-extras.MATTERMOST_WEBHOOK_URL="${MATTERMOST_WEBHOOK_URL}"
+  # NOTE: `deploy-bundle` was renamed to `deploy` (preferred).
 
   - name: clean
     description: "Remove local Zarf package files"
