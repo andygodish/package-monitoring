@@ -21,6 +21,6 @@ components:
           - manifests/podmonitor-admin-gateway-envoy-prom.yaml
           - manifests/podmonitor-tenant-gateway-envoy-prom.yaml
           - manifests/prometheusrule-tenant-gateway-421.yaml
+          - manifests/secret-mattermost-webhook.yaml
           - manifests/alertmanagerconfig-mattermost.yaml
           - manifests/networkpolicy-allow-alertmanager-egress-chat-via-tenant-gateway.yaml
-          - manifests/secret-mattermost-webhook.yaml

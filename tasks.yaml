@@ -67,6 +67,8 @@ tasks:
         cmd: |
           set -euo pipefail
 
+          kubectl apply -f manifests/podmonitor-admin-gateway-envoy-prom.yaml
+          kubectl apply -f manifests/podmonitor-tenant-gateway-envoy-prom.yaml
           kubectl apply -f manifests/prometheusrule-tenant-gateway-421.yaml
           kubectl apply -f manifests/networkpolicy-allow-alertmanager-egress-chat-via-tenant-gateway.yaml
           kubectl apply -f manifests/alertmanagerconfig-mattermost.yaml
