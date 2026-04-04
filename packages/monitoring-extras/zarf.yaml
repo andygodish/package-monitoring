@@ -3,7 +3,7 @@ metadata:
   name: monitoring-extras
   description: Additional monitoring resources (PrometheusRule, AlertmanagerConfig, NetworkPolicy, webhook Secret)
   # Version is not strictly required for local packages, but helps with traceability.
-  version: 0.1.1
+  version: 0.1.2
 
 variables:
   - name: MATTERMOST_WEBHOOK_URL
@@ -21,6 +21,6 @@ components:
           - manifests/podmonitor-admin-gateway-envoy-prom.yaml
           - manifests/podmonitor-tenant-gateway-envoy-prom.yaml
           - manifests/prometheusrule-tenant-gateway-421.yaml
-          - manifests/secret-mattermost-webhook.yaml
+          - manifests/secret-mattermost-webhook.yaml.tpl
           - manifests/alertmanagerconfig-mattermost.yaml
           - manifests/networkpolicy-allow-alertmanager-egress-chat-via-tenant-gateway.yaml
