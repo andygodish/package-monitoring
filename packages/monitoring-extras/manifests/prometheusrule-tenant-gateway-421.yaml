@@ -1,0 +1,27 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: tenant-gateway-421
+  namespace: monitoring
+  labels:
+    prometheus: kube-prometheus-stack-prometheus
+    role: alert-rules
+spec:
+  groups:
+    - name: tenant-gateway
+      rules:
+        - alert: TenantGatewayMisdirectedRequest421
+          annotations:
+            summary: Tenant gateway returned HTTP 421 (Misdirected Request)
+            description: >-
+              At least one 421 response was observed from tenant-ingressgateway in the last 5 minutes.
+              This can indicate the 421 EnvoyFilter is enabled (WebKit/iOS repro path).
+          expr: |
+            sum(increase(istio_requests_total{
+              source_workload_namespace="istio-tenant-gateway",
+              source_workload="tenant-ingressgateway",
+              response_code="421"
+            }[5m])) > 0
+          for: 0m
+          labels:
+            severity: warning

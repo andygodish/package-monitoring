@@ -1,0 +1,26 @@
+kind: ZarfPackageConfig
+metadata:
+  name: monitoring-extras
+  description: Additional monitoring resources (PrometheusRule, AlertmanagerConfig, NetworkPolicy, webhook Secret)
+  # Version is not strictly required for local packages, but helps with traceability.
+  version: 0.1.2
+
+variables:
+  - name: MATTERMOST_WEBHOOK_URL
+    description: Mattermost incoming webhook URL (e.g. https://chat.<domain>/hooks/<token>)
+    prompt: true
+    sensitive: true
+
+components:
+  - name: monitoring-extras
+    required: true
+    manifests:
+      - name: monitoring-alerting
+        namespace: monitoring
+        files:
+          - manifests/podmonitor-admin-gateway-envoy-prom.yaml
+          - manifests/podmonitor-tenant-gateway-envoy-prom.yaml
+          - manifests/prometheusrule-tenant-gateway-421.yaml
+          - manifests/secret-mattermost-webhook.yaml.tpl
+          - manifests/alertmanagerconfig-mattermost.yaml
+          - manifests/networkpolicy-allow-alertmanager-egress-chat-via-tenant-gateway.yaml

@@ -1,11 +1,11 @@
 kind: UDSBundle
 metadata:
   name: core-monitoring
-  version: 0.59.1
+  version: 0.61.1
 packages:
   - name: "monitoring"
     repository: ghcr.io/defenseunicorns/packages/private/uds/core-monitoring
-    ref: 0.59.1-unicorn
+    ref: 0.61.1-unicorn
     overrides:
       grafana:
         grafana:
@@ -14,3 +14,8 @@ packages:
               path: extraSecretMounts
             - name: ENV_GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA
               path: env.GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA
+
+  # Local Zarf package included in this bundle to make dev alerting durable across redeploys.
+  - name: monitoring-extras
+    path: ./packages/monitoring-extras
+    ref: 0.1.2
