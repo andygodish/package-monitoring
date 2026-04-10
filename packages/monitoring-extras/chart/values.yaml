@@ -1,0 +1,35 @@
+namespace: monitoring
+
+prometheusRule:
+  enabled: true
+  name: tenant-gateway-421
+  # Prometheus-operator label selectors vary by distro; keep existing labels but allow override.
+  labels:
+    prometheus: kube-prometheus-stack-prometheus
+    role: alert-rules
+  alertName: TenantGatewayMisdirectedRequest421
+  severity: warning
+  window: 5m
+  expr:
+    source_workload_namespace: istio-tenant-gateway
+    source_workload: tenant-ingressgateway
+
+mattermost:
+  enabled: true
+  secretName: mattermost-webhook
+  webhookUrl: ""  # set via Zarf var / values override
+  alertmanagerConfig:
+    name: mattermost
+    route:
+      matchAlertName: TenantGatewayMisdirectedRequest421
+
+networkPolicy:
+  enabled: true
+  name: allow-alertmanager-egress-chat-via-tenant-gateway
+  alertmanagerPodSelector:
+    app.kubernetes.io/name: alertmanager
+  tenantGateway:
+    namespace: istio-tenant-gateway
+    podSelector:
+      app: tenant-ingressgateway
+    port: 443

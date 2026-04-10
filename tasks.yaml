@@ -1,5 +1,6 @@
 includes:
   - bundles: ./tasks/bundles.yaml
+  - packages: ./tasks/packages.yaml
 
 variables:
   - name: REGISTRY
