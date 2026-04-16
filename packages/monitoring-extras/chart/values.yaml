@@ -28,8 +28,19 @@ networkPolicy:
   name: allow-alertmanager-egress-chat-via-tenant-gateway
   alertmanagerPodSelector:
     app.kubernetes.io/name: alertmanager
+
+  # Option A (default): allow egress to the tenant gateway pods (works if the webhook URL resolves
+  # to an in-cluster Service/Pod IP via CNI service handling).
   tenantGateway:
     namespace: istio-tenant-gateway
     podSelector:
       app: tenant-ingressgateway
+    port: 443
+
+  # Option B: allow egress directly to an IP/CIDR (works reliably when the webhook URL resolves
+  # to a MetalLB/LoadBalancer IP like 172.20.0.200).
+  ipBlock:
+    enabled: false
+    cidr: ""   # e.g. "172.20.0.200/32"
+    except: [] # optional
     port: 443

@@ -11,6 +11,7 @@ spec:
   policyTypes:
     - Egress
   egress:
+    # Option A: allow egress to tenant gateway pods
     - to:
         - namespaceSelector:
             matchLabels:
@@ -21,4 +22,18 @@ spec:
       ports:
         - protocol: TCP
           port: {{ .Values.networkPolicy.tenantGateway.port }}
+
+{{- if .Values.networkPolicy.ipBlock.enabled }}
+    # Option B: allow egress to a specific LoadBalancer/IP
+    - to:
+        - ipBlock:
+            cidr: {{ .Values.networkPolicy.ipBlock.cidr | quote }}
+{{- if .Values.networkPolicy.ipBlock.except }}
+            except:
+{{ toYaml .Values.networkPolicy.ipBlock.except | indent 14 }}
+{{- end }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.networkPolicy.ipBlock.port }}
+{{- end }}
 {{- end }}
