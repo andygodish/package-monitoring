@@ -26,7 +26,12 @@ packages:
                 ruleNamespaceSelector: {}
             alertmanager:
               alertmanagerSpec:
+                # NamespaceSelector must be open to discover AlertmanagerConfig resources in other namespaces.
                 alertmanagerConfigNamespaceSelector: {}
+                # Selector ensures we only pick up AlertmanagerConfig resources intended for this release.
+                alertmanagerConfigSelector:
+                  matchLabels:
+                    release: kube-prometheus-stack
 
   # Local package to persist the dev-cluster one-off fixes (421 rule + MM routing + NetPol + gateway PodMonitors)
   - name: monitoring-extras
