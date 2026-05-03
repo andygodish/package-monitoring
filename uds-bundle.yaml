@@ -1,11 +1,11 @@
 kind: UDSBundle
 metadata:
   name: core-monitoring
-  version: 0.59.1
+  version: 0.61.1
 packages:
   - name: "monitoring"
     repository: ghcr.io/defenseunicorns/packages/private/uds/core-monitoring
-    ref: 0.59.1-unicorn
+    ref: 0.61.1-unicorn
     overrides:
       grafana:
         grafana:
@@ -14,3 +14,25 @@ packages:
               path: extraSecretMounts
             - name: ENV_GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA
               path: env.GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA
+
+      # Ensure kube-prometheus-stack discovers PodMonitors/PrometheusRules/AlertmanagerConfigs
+      # created outside the monitoring namespace (e.g., istio gateways).
+      kube-prometheus-stack:
+        kube-prometheus-stack:
+          values:
+            prometheus:
+              prometheusSpec:
+                podMonitorNamespaceSelector: {}
+                ruleNamespaceSelector: {}
+            alertmanager:
+              alertmanagerSpec:
+                # NamespaceSelector must be open to discover AlertmanagerConfig resources in other namespaces.
+                alertmanagerConfigNamespaceSelector: {}
+                # Selector ensures we only pick up AlertmanagerConfig resources intended for this release.
+                alertmanagerConfigSelector:
+                  matchLabels:
+                    release: kube-prometheus-stack
+
+  # Local package to persist the dev-cluster one-off fixes (421 rule + MM routing + NetPol + gateway PodMonitors)
+  - name: monitoring-extras
+    path: ./monitoring-extras
