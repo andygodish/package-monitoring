@@ -1,0 +1,24 @@
+kind: ZarfPackageConfig
+metadata:
+  name: monitoring-extras
+  description: Additional monitoring resources (PrometheusRule, AlertmanagerConfig, NetworkPolicy, webhook Secret)
+  # Version is not strictly required for local packages, but helps with traceability.
+  version: 0.1.0
+
+variables:
+  - name: MATTERMOST_WEBHOOK_URL
+    description: Mattermost incoming webhook URL (e.g. https://chat.<domain>/hooks/<token>)
+    prompt: true
+    sensitive: true
+
+components:
+  - name: monitoring-extras
+    required: true
+    charts:
+      - name: monitoring-extras
+        version: 0.1.0
+        localPath: chart
+        namespace: monitoring
+        variables:
+          - name: MATTERMOST_WEBHOOK_URL
+            path: mattermost.webhookUrl

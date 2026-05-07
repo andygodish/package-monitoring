@@ -1,0 +1,33 @@
+{{- if and .Values.mattermost.enabled (.Capabilities.APIVersions.Has "monitoring.coreos.com/v1alpha1") -}}
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: {{ .Values.mattermost.alertmanagerConfig.name | quote }}
+  namespace: {{ include "monitoring-extras.namespace" . }}
+spec:
+  route:
+    receiver: "null"
+    routes:
+      - matchers:
+          - name: alertname
+            value: {{ .Values.mattermost.alertmanagerConfig.route.matchAlertName | quote }}
+            matchType: "="
+        receiver: mattermost
+  receivers:
+    - name: "null"
+    - name: mattermost
+      slackConfigs:
+        - apiURL:
+            name: {{ .Values.mattermost.secretName | quote }}
+            key: url
+          username: alertmanager
+          sendResolved: true
+          title: "[{{`{{ .Status | toUpper }}`}}] {{`{{ .CommonLabels.alertname }}`}}"
+          text: |-
+            *Severity:* {{`{{ .CommonLabels.severity }}`}}
+            *Namespace:* {{`{{ .CommonLabels.namespace }}`}}
+            {{`{{ range .Alerts -}}`}}
+            - {{`{{ .Annotations.summary }}`}}
+              {{`{{ .Annotations.description }}`}}
+            {{`{{ end }}`}}
+{{- end }}
